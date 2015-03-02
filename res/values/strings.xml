@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Robot Control Client</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="toggle_connected">Disconnect</string>
+    <string name="toggle_disconnected">Connect</string>
+    <string name="DefaultRobotIP">192.168.2.100</string>
+
+</resources>
