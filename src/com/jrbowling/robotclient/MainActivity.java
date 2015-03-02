@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
 	Thread clientThread = null;
 	private Socket s;
 	
-	private static final String TAG = "RobotClient";
+	private static final String TAG = "LK4K Client";
 	//private ToggleButton tb;
 	private ImageButton forward_button;
 	private ImageButton reverse_button;
@@ -411,7 +411,7 @@ public class MainActivity extends Activity {
    
 class ClientThread implements Runnable {
 		
-	  	private static final int SERVERPORT = 6000;
+	  	private static final int SERVERPORT = 8082;
 	
 	    public void run() {
 	    	Log.d("clientThread","clientThread started");
