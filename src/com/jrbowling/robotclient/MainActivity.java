@@ -105,7 +105,7 @@ public class MainActivity extends Activity {
 @Override
  protected void onDestroy() {
 	
-	 Log.d(TAG,"onDestroy() called");
+	 Log.d(TAG, "onDestroy() called");
 	 stayConnected = false;
 	 socketCleanup();
 	 super.onDestroy(); 
@@ -115,7 +115,7 @@ public class MainActivity extends Activity {
 //@Override
 //protected void onPause() {
 	
-//	 Log.d(TAG,"onPause() called");
+//	 Log.d(TAG, "onPause() called");
 //	 stayConnected = false;
 //	 socketCleanup();
 //	 super.onDestroy();
@@ -184,8 +184,8 @@ public class MainActivity extends Activity {
 			//launch network thread
 			clientThread = new Thread(new ClientThread());
 			clientThread.start();
-			
-			vidURL = "http://"+robotIP+":6001/shot.jpg";
+			// AJR: This line is using standalone app IP webcam pro to serve up an image from the Android server" 
+			vidURL = "http://"+robotIP+":8080/shot.jpg";
 			vidLoop();
           }
         });
@@ -309,7 +309,7 @@ public class MainActivity extends Activity {
 
         public void run() {
         	//Periodically update GUI elements from sensor and other data
-        	Log.d(TAG,"Connected is: " + robotConnected.toString());
+        	Log.d(TAG, "Connected is: " + robotConnected.toString());
         	
         	//update connection status
         	if (robotConnected)
@@ -353,7 +353,7 @@ public class MainActivity extends Activity {
  public void socketCleanup()
     {
     	try {
-    	Log.d("clientThread","Socket Closing");
+    	Log.d(TAG, "Socket Closing");
     	if (s != null)
     		s.close();
     	setConnected(false);
@@ -389,7 +389,7 @@ public class MainActivity extends Activity {
                 InputStream is = httpCon.getInputStream();
                 return BitmapFactory.decodeStream(is);
             }catch(Exception e){
-                Log.e("Image","Failed to load image",e);
+                Log.e(TAG, "Failed to load image",e);
             }
             return null;
         } 
@@ -414,16 +414,17 @@ class ClientThread implements Runnable {
 	  	private static final int SERVERPORT = 8082;
 	
 	    public void run() {
-	    	Log.d("clientThread","clientThread started");
+	    	Log.d(TAG, "clientThread started");
 	    	setConnected(false);
-	    	
+	    	 // stackexchange where Jay Snayder thinks I have a problem ....	https://stackoverflow.com/questions/28705717/why-does-this-code-loop-around-with-socket-setup-caught-ioexception
 	    	while ((!Thread.currentThread().isInterrupted()) && stayConnected)
 	    	{
 	    	controlLoop();
+	    	stayConnected = false; //AJR: NAT RECKONS UNCOMMENT THIS LINE TO TROUBLESHOOT. 
 	    	}
 	    
 	    	//user requested disconnect
-	    	Log.d("clientThread","clientThread ending");
+	    	Log.d(TAG, "clientThread ending");
 	    }
 	    
 	    void controlLoop()
@@ -434,7 +435,7 @@ class ClientThread implements Runnable {
 	    	String outputString = null;
 	    	Boolean continueLoop = true;
 	    	
-	    	Log.d("clientThread","controlLoop starting");
+	    	Log.d(TAG, "controlLoop starting");
 	    	
 	    	 //protocol:
             //Java boolean: enabled or disabled 
@@ -445,27 +446,31 @@ class ClientThread implements Runnable {
 	    	continueLoop = true;
 	    	
 	    	try {
-
+	    		Log.d(TAG,"NG: Loop Beginning");
                 InetAddress serverAddr = InetAddress.getByName(robotIP);
                 Socket s = new Socket();
                 int timeout = 2000;   // milliseconds
+                Log.d(TAG, "NG: Create Connection Object");
                 SocketAddress sockaddr = new InetSocketAddress(serverAddr, SERVERPORT);
+                Log.d(TAG, "NG: Connect Connection Object");
                 s.connect(sockaddr, timeout);
-                
+                Log.d(TAG, "NG: Connection Object Created");
+                Log.d(TAG, "NG: Create Input and Output");
+                // Setup Input and Output stream on the connection
                 s_input = new BufferedReader(new InputStreamReader(s.getInputStream()));
                 s_output = new PrintWriter(s.getOutputStream(), true);
                 
             	} catch (UnknownHostException e1) {
             		e1.printStackTrace();
-            		Log.d("clientThread","Got invalid IP string in client thread");
+            		Log.d(TAG, "Got invalid IP string in client thread");
             		continueLoop = false;
             	} catch (IOException e) {
-            			Log.d("clientThread","Socket setup caught IOexception");
+            			Log.d(TAG, "Socket setup caught IOexception");
             			continueLoop = false;
 
             		}
 
-	    	Log.d("clientThread","Socket Established");
+	    	Log.d(TAG, "Socket Established - Possibly");
 	    	
 	    	setConnected(true);
 	    	
@@ -489,16 +494,16 @@ class ClientThread implements Runnable {
 	    				if (inputString == null)
 	    					{
 	    					continueLoop = false;
-	    					Log.d("clientThread","Unexpected disconnection.");
+	    					Log.d(TAG, "Unexpected disconnection.");
 	    					}
 	    				else
 	    				{
-	    				Log.d("clientThread","Client got: " + inputString.toString());
+	    				Log.d(TAG, "Client got: " + inputString.toString());
 	    				//parse returned string, which is just an integer containing the signal strength
 	    				try {
 	    				    signalStrength = Integer.parseInt(inputString);
 	    					} catch(NumberFormatException nfe) {
-	    						Log.d(TAG,"Got invalid signal strength from client");
+	    						Log.d(TAG, "Got invalid signal strength from client");
 	    					} 
 	    					}
 	    				}
@@ -506,19 +511,19 @@ class ClientThread implements Runnable {
 	    				{
 	    				//printwriter.checkError returned true, something bad happened network-wise
 	    				continueLoop = false;
-    					Log.d("clientThread","Printwriter.checkError() returned true, likely network problem");
+    					Log.d(TAG, "Printwriter.checkError() returned true, likely network problem");
 	    				}
 	    		}
 	    	
              socketCleanup();
-             Log.d("clientThread","controlLoop ending");
+             Log.d(TAG, "controlLoop ending");
              
 	    	} catch (IOException e) {
             	//this happens if the connection times out.
-            	Log.d("clientThread", "Client comm thread got IOException in control loop.");
+            	Log.d(TAG, "Client comm thread got IOException in control loop.");
             	socketCleanup();
 	    	} 	 
-             
+         //NG: stay connected to false????     
 	    }//end control loop
 	    
 	} //end client thread
