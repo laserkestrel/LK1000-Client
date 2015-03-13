@@ -164,7 +164,7 @@ public class MainActivity extends Activity {
     	AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
         alert.setTitle("Please enter robot IP address");
-        alert.setMessage("Example: 192.168.1.100");
+        alert.setMessage("Example: 10.20.30.43");
 
         final EditText input = new EditText(this);
         alert.setView(input);
@@ -186,6 +186,7 @@ public class MainActivity extends Activity {
 			clientThread.start();
 			// AJR: This line is using standalone app IP webcam pro to serve up an image from the Android server" 
 			vidURL = "http://"+robotIP+":8080/shot.jpg";
+			Log.i(TAG, "http://"+robotIP+":8080/shot.jpg AJR video stream available here");
 			vidLoop();
           }
         });
@@ -287,7 +288,7 @@ public class MainActivity extends Activity {
  
  pref = getApplicationContext().getSharedPreferences("RobotClient", 0); 
  Editor editor = pref.edit();
- result = pref.getString("robotIP", "192.168.1.4");
+ result = pref.getString("robotIP", "10.20.30.43");
  
  return result;
  }
@@ -450,9 +451,9 @@ class ClientThread implements Runnable {
                 InetAddress serverAddr = InetAddress.getByName(robotIP);
                 Socket s = new Socket();
                 int timeout = 2000;   // milliseconds
-                Log.d(TAG, "NG: Create Connection Object");
+                Log.d(TAG, "NG: Next create Conn. Obj. using>" + serverAddr +":"+ SERVERPORT);
                 SocketAddress sockaddr = new InetSocketAddress(serverAddr, SERVERPORT);
-                Log.d(TAG, "NG: Connect Connection Object");
+                Log.d(TAG, "NG: Conn. to socket Obj. using>" + sockaddr);
                 s.connect(sockaddr, timeout);
                 Log.d(TAG, "NG: Connection Object Created");
                 Log.d(TAG, "NG: Create Input and Output");
