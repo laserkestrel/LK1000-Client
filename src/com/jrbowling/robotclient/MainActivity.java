@@ -417,11 +417,10 @@ class ClientThread implements Runnable {
 	    public void run() {
 	    	Log.d(TAG, "clientThread started");
 	    	setConnected(false);
-	    	 // stackexchange where Jay Snayder thinks I have a problem ....	https://stackoverflow.com/questions/28705717/why-does-this-code-loop-around-with-socket-setup-caught-ioexception
 	    	while ((!Thread.currentThread().isInterrupted()) && stayConnected)
 	    	{
 	    	controlLoop();
-	    	stayConnected = false; //AJR: NAT RECKONS UNCOMMENT THIS LINE TO TROUBLESHOOT. 
+	    	//stayConnected = false; //AJR: Had this line uncommented..makes connection massively unreliable.. 
 	    	}
 	    
 	    	//user requested disconnect
@@ -456,10 +455,11 @@ class ClientThread implements Runnable {
                 Log.d(TAG, "NG: Conn. to socket Obj. using>" + sockaddr);
                 s.connect(sockaddr, timeout);
                 Log.d(TAG, "NG: Connection Object Created");
-                Log.d(TAG, "NG: Create Input and Output");
+                
                 // Setup Input and Output stream on the connection
                 s_input = new BufferedReader(new InputStreamReader(s.getInputStream()));
                 s_output = new PrintWriter(s.getOutputStream(), true);
+                
                 
             	} catch (UnknownHostException e1) {
             		e1.printStackTrace();
@@ -482,7 +482,10 @@ class ClientThread implements Runnable {
 	    			speed = throttle.getProgress();
 	    			
 	    			if (stayConnected)
-	    				outputString = robotEnabled.toString() + "," + direction.toString() + "," + speed.toString(); 
+	    				{
+	    				outputString = robotEnabled.toString() + "," + direction.toString() + "," + speed.toString();
+	    				Log.d(TAG, "Client sends: " + outputString.toString());
+	    				}
 	    			else 
 	    				outputString = "quit";
 	    			
@@ -524,7 +527,7 @@ class ClientThread implements Runnable {
             	Log.d(TAG, "Client comm thread got IOException in control loop.");
             	socketCleanup();
 	    	} 	 
-         //NG: stay connected to false????     
+
 	    }//end control loop
 	    
 	} //end client thread
