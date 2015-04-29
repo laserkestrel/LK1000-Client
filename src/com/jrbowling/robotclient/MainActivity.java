@@ -65,6 +65,7 @@ public class MainActivity extends Activity {
 	private ImageButton right_button;
 	private ImageButton left_button;
 	private SeekBar throttle;
+	private SeekBar phone_tilt;
 	
 	private ImageView imageWindow;
 	private ImageView connectedLED;
@@ -75,6 +76,7 @@ public class MainActivity extends Activity {
 	private String robotIP = "";
 	String direction = "stop";
 	Integer speed = 100;
+	Integer phoneTilt = 100;
 	Boolean robotEnabled = true;
 	Boolean robotConnected = false;
 	private Handler GUIUpdateHandler = new Handler();
@@ -153,6 +155,8 @@ public class MainActivity extends Activity {
         left_button = (ImageButton) findViewById(R.id.leftButton);
         throttle = (SeekBar)findViewById(R.id.throttleSeekbar);
         throttle.setProgress(75); 
+        phone_tilt = (SeekBar)findViewById(R.id.phoneTiltSeekBar);
+        phone_tilt.setProgress(75); 
         forward_button.setOnTouchListener(forwardButtonListener);
         reverse_button.setOnTouchListener(reverseButtonListener);
         right_button.setOnTouchListener(rightButtonListener);
@@ -310,7 +314,7 @@ public class MainActivity extends Activity {
 
         public void run() {
         	//Periodically update GUI elements from sensor and other data
-        	Log.d(TAG, "Connected is: " + robotConnected.toString());
+        	//Log.d(TAG, "Connected is: " + robotConnected.toString());
         	
         	//update connection status
         	if (robotConnected)
@@ -480,11 +484,12 @@ class ClientThread implements Runnable {
 	    		while ((stayConnected) && (continueLoop)) {	
 	    		
 	    			speed = throttle.getProgress();
+	    			phoneTilt = phone_tilt.getProgress();
 	    			
 	    			if (stayConnected)
 	    				{
-	    				outputString = robotEnabled.toString() + "," + direction.toString() + "," + speed.toString();
-	    				Log.d(TAG, "Client sends: " + outputString.toString());
+	    				outputString = robotEnabled.toString() + "," + direction.toString() + "," + speed.toString() + "," + phoneTilt.toString();
+	    				//Log.d(TAG, "Client sends: " + outputString.toString());
 	    				}
 	    			else 
 	    				outputString = "quit";
@@ -502,7 +507,7 @@ class ClientThread implements Runnable {
 	    					}
 	    				else
 	    				{
-	    				Log.d(TAG, "Client got: " + inputString.toString());
+	    				//Log.d(TAG, "Client got: " + inputString.toString());
 	    				//parse returned string, which is just an integer containing the signal strength
 	    				try {
 	    				    signalStrength = Integer.parseInt(inputString);
