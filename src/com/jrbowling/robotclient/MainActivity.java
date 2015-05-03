@@ -154,6 +154,7 @@ public class MainActivity extends Activity {
         reverse_button = (ImageButton) findViewById(R.id.reverseButton);
         right_button = (ImageButton) findViewById(R.id.rightButton);
         left_button = (ImageButton) findViewById(R.id.leftButton);
+        movecam_button = (ImageButton) findViewById(R.id.moveCamButton);// THIS IS A REFERENCE TO THE GADGET ON LAYOUT
         throttle = (SeekBar)findViewById(R.id.throttleSeekbar);
         throttle.setProgress(75); 
         phone_pan = (SeekBar)findViewById(R.id.phonePanSeekBar);
@@ -162,6 +163,7 @@ public class MainActivity extends Activity {
         reverse_button.setOnTouchListener(reverseButtonListener);
         right_button.setOnTouchListener(rightButtonListener);
         left_button.setOnTouchListener(leftButtonListener);
+        movecam_button.setOnTouchListener(moveCamButtonListener);
     }
     
     private void showIPAlert() {
@@ -275,7 +277,23 @@ public class MainActivity extends Activity {
         return false;
      }  
 };
-  
+
+private OnTouchListener moveCamButtonListener = new OnTouchListener(){
+    public boolean onTouch(View v, MotionEvent event) {
+       switch ( event.getAction() ) {
+        case MotionEvent.ACTION_DOWN: 
+        	//setActivityBackgroundColor(0xffff0000);
+        	direction = "panCamera";
+        	 break;
+        case MotionEvent.ACTION_UP: 
+        	//setActivityBackgroundColor(0xff000000);
+        	direction = "stop";
+        	 break;
+        }
+       return false;
+    }  
+};
+
 
 //save and retrieve IP address using the shared preferences framework
  private void saveIP(String IP)
