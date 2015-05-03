@@ -80,11 +80,11 @@
          android:src="@drawable/wifi0" />
 
      <SeekBar
-         android:id="@+id/phoneTiltSeekBar"
+         android:id="@+id/phonePanSeekBar"
          android:layout_width="500px"
          android:layout_height="wrap_content"
          android:layout_above="@+id/rightButton"
          android:layout_alignLeft="@+id/throttleSeekbar"
-         android:max="@integer/phoneTiltMax" />
+         android:max="@integer/phonePanMax" />
 
 </RelativeLayout>

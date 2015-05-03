@@ -46,12 +46,13 @@ public final class R {
         public static final int imageView1=0x7f090000;
         public static final int imageViewConnectStatus=0x7f090007;
         public static final int leftButton=0x7f090002;
-        public static final int phoneTiltSeekBar=0x7f090009;
+        public static final int phonePanSeekBar=0x7f090009;
         public static final int reverseButton=0x7f090004;
         public static final int rightButton=0x7f090003;
         public static final int throttleSeekbar=0x7f090006;
     }
     public static final class integer {
+        public static final int phonePanMax=0x7f050001;
         public static final int phoneTiltMax=0x7f050000;
     }
     public static final class layout {

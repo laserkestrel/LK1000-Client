@@ -65,7 +65,7 @@ public class MainActivity extends Activity {
 	private ImageButton right_button;
 	private ImageButton left_button;
 	private SeekBar throttle;
-	private SeekBar phone_tilt;
+	private SeekBar phone_pan;
 	
 	private ImageView imageWindow;
 	private ImageView connectedLED;
@@ -155,8 +155,8 @@ public class MainActivity extends Activity {
         left_button = (ImageButton) findViewById(R.id.leftButton);
         throttle = (SeekBar)findViewById(R.id.throttleSeekbar);
         throttle.setProgress(75); 
-        phone_tilt = (SeekBar)findViewById(R.id.phoneTiltSeekBar);
-        phone_tilt.setProgress(75); 
+        phone_pan = (SeekBar)findViewById(R.id.phonePanSeekBar);
+        phone_pan.setProgress(75); 
         forward_button.setOnTouchListener(forwardButtonListener);
         reverse_button.setOnTouchListener(reverseButtonListener);
         right_button.setOnTouchListener(rightButtonListener);
@@ -484,7 +484,7 @@ class ClientThread implements Runnable {
 	    		while ((stayConnected) && (continueLoop)) {	
 	    		
 	    			speed = throttle.getProgress();
-	    			phoneTilt = phone_tilt.getProgress();
+	    			phoneTilt = phone_pan.getProgress();
 	    			
 	    			if (stayConnected)
 	    				{

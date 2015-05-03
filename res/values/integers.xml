@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="phoneTiltMax">1886</integer>
+    <integer name="phonePanMax">1886</integer>
 </resources>
