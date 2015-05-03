@@ -41,13 +41,14 @@ public final class R {
     public static final class id {
         public static final int ImageView01=0x7f090001;
         public static final int ImageViewSignalStrength=0x7f090008;
-        public static final int action_settings=0x7f09000b;
+        public static final int action_settings=0x7f09000c;
         public static final int forwardButton=0x7f090005;
         public static final int imageView1=0x7f090000;
         public static final int imageViewConnectStatus=0x7f090007;
         public static final int leftButton=0x7f090002;
         public static final int moveCamButton=0x7f09000a;
         public static final int phonePanSeekBar=0x7f090009;
+        public static final int phoneTiltSeekBar=0x7f09000b;
         public static final int reverseButton=0x7f090004;
         public static final int rightButton=0x7f090003;
         public static final int throttleSeekbar=0x7f090006;

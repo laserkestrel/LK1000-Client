@@ -67,6 +67,7 @@ public class MainActivity extends Activity {
 	private ImageButton movecam_button;
 	private SeekBar throttle;
 	private SeekBar phone_pan;
+	private SeekBar phone_tilt;
 	
 	private ImageView imageWindow;
 	private ImageView connectedLED;
@@ -78,6 +79,7 @@ public class MainActivity extends Activity {
 	String direction = "stop";
 	Integer speed = 100;
 	Integer phonePan = 100;
+	Integer phoneTilt = 100;
 	Boolean robotEnabled = true;
 	Boolean robotConnected = false;
 	private Handler GUIUpdateHandler = new Handler();
@@ -159,6 +161,8 @@ public class MainActivity extends Activity {
         throttle.setProgress(75); 
         phone_pan = (SeekBar)findViewById(R.id.phonePanSeekBar);
         phone_pan.setProgress(75); 
+        phone_tilt = (SeekBar)findViewById(R.id.phoneTiltSeekBar);
+        phone_tilt.setProgress(75); 
         forward_button.setOnTouchListener(forwardButtonListener);
         reverse_button.setOnTouchListener(reverseButtonListener);
         right_button.setOnTouchListener(rightButtonListener);
@@ -504,10 +508,11 @@ class ClientThread implements Runnable {
 	    		
 	    			speed = throttle.getProgress();
 	    			phonePan = phone_pan.getProgress();
+	    			phoneTilt = phone_tilt.getProgress();
 	    			
 	    			if (stayConnected)
 	    				{
-	    				outputString = robotEnabled.toString() + "," + direction.toString() + "," + speed.toString() + "," + phonePan.toString();
+	    				outputString = robotEnabled.toString() + "," + direction.toString() + "," + speed.toString() + "," + phonePan.toString() + "," + phoneTilt.toString();
 	    				//Log.d(TAG, "Client sends: " + outputString.toString());
 	    				}
 	    			else 

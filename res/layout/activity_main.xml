@@ -96,4 +96,12 @@
          android:scaleType="fitCenter"
          android:src="@drawable/left" />
 
+     <SeekBar
+         android:id="@+id/phoneTiltSeekBar"
+         android:layout_width="500px"
+         android:layout_height="wrap_content"
+         android:layout_above="@+id/leftButton"
+         android:layout_alignLeft="@+id/phonePanSeekBar"
+         android:max="@integer/phoneTiltMax" />
+
 </RelativeLayout>
