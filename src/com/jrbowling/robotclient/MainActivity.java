@@ -283,7 +283,7 @@ private OnTouchListener moveCamButtonListener = new OnTouchListener(){
        switch ( event.getAction() ) {
         case MotionEvent.ACTION_DOWN: 
         	//setActivityBackgroundColor(0xffff0000);
-        	direction = "panCamera";
+        	direction = "moveCamera";
         	 break;
         case MotionEvent.ACTION_UP: 
         	//setActivityBackgroundColor(0xff000000);
