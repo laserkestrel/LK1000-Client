@@ -10,9 +10,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.EditText;
 import android.widget.ImageView;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -21,17 +23,20 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.view.Window;
 import android.view.WindowManager;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException; 
 import java.net.SocketTimeoutException;
+
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
 import android.net.wifi.WifiInfo;  
@@ -39,15 +44,19 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.view.View.OnTouchListener;
 import android.view.MotionEvent;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException; 
 import java.net.SocketTimeoutException;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+
 import java.net.SocketAddress;
 import java.net.InetSocketAddress;
+
 import android.os.Handler;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -58,7 +67,7 @@ public class MainActivity extends Activity {
 	Thread clientThread = null;
 	private Socket s;
 	
-	private static final String TAG = "LK4K Client";
+	private static final String DEBUG_TAG = "LK4K Client";
 	//private ToggleButton tb;
 	private ImageButton forward_button;
 	private ImageButton reverse_button;
@@ -72,6 +81,7 @@ public class MainActivity extends Activity {
 	private ImageView imageWindow;
 	private ImageView connectedLED;
 	private ImageView signalStrengthIndicator;
+	private TextView batteryInfo;
 	
 	private Boolean stayConnected = false;
 	String vidURL = "";
@@ -84,6 +94,7 @@ public class MainActivity extends Activity {
 	Boolean robotConnected = false;
 	private Handler GUIUpdateHandler = new Handler();
 	private Integer signalStrength = 0;
+	private Integer batteryStrength = 0;
 	private SharedPreferences pref; 
 	private long timeLastPress = 0;
 
@@ -98,7 +109,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         setActivityBackgroundColor(0xff000000);
         
-        Log.i(TAG, "Robot client started"); 
+        Log.i(DEBUG_TAG, "Robot client started"); 
 
         initGUIComponents();
        
@@ -110,7 +121,7 @@ public class MainActivity extends Activity {
 @Override
  protected void onDestroy() {
 	
-	 Log.d(TAG, "onDestroy() called");
+	 Log.d(DEBUG_TAG, "onDestroy() called");
 	 stayConnected = false;
 	 socketCleanup();
 	 super.onDestroy(); 
@@ -120,7 +131,7 @@ public class MainActivity extends Activity {
 //@Override
 //protected void onPause() {
 	
-//	 Log.d(TAG, "onPause() called");
+//	 Log.d(DEBUG_TAG, "onPause() called");
 //	 stayConnected = false;
 //	 socketCleanup();
 //	 super.onDestroy();
@@ -157,6 +168,7 @@ public class MainActivity extends Activity {
         right_button = (ImageButton) findViewById(R.id.rightButton);
         left_button = (ImageButton) findViewById(R.id.leftButton);
         movecam_button = (ImageButton) findViewById(R.id.moveCamButton);// THIS IS A REFERENCE TO THE GADGET ON LAYOUT
+        batteryInfo=(TextView) findViewById(R.id.textViewBatteryInfo);
         throttle = (SeekBar)findViewById(R.id.throttleSeekbar);
         throttle.setProgress(75); 
         phone_pan = (SeekBar)findViewById(R.id.phonePanSeekBar);
@@ -168,6 +180,7 @@ public class MainActivity extends Activity {
         right_button.setOnTouchListener(rightButtonListener);
         left_button.setOnTouchListener(leftButtonListener);
         movecam_button.setOnTouchListener(moveCamButtonListener);
+        
     }
     
     private void showIPAlert() {
@@ -184,7 +197,7 @@ public class MainActivity extends Activity {
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int whichButton) {
         	robotIP = input.getText().toString();
-        	Log.i(TAG, "User entered IP " + robotIP);
+        	Log.i(DEBUG_TAG, "User entered IP " + robotIP);
         	saveIP(robotIP);
         	//Handler launches GUIUpdater every 1000 ms. Launch when user clicks ok.
             updateGUI();
@@ -197,7 +210,7 @@ public class MainActivity extends Activity {
 			clientThread.start();
 			// AJR: This line is using standalone app IP webcam pro to serve up an image from the Android server" 
 			vidURL = "http://"+robotIP+":8080/shot.jpg";
-			Log.i(TAG, "http://"+robotIP+":8080/shot.jpg AJR video stream available here");
+			Log.i(DEBUG_TAG, "http://"+robotIP+":8080/shot.jpg AJR video stream available here");
 			vidLoop();
           }
         });
@@ -214,7 +227,7 @@ public class MainActivity extends Activity {
     
  private void appExit() 
  {
-	 Log.i(TAG, "Exit requested by user");
+	 Log.i(DEBUG_TAG, "Exit requested by user");
 	 this.finish();	 
  }
     
@@ -337,12 +350,13 @@ private OnTouchListener moveCamButtonListener = new OnTouchListener(){
 
         public void run() {
         	//Periodically update GUI elements from sensor and other data
-        	//Log.d(TAG, "Connected is: " + robotConnected.toString());
+        	//Log.d(DEBUG_TAG, "Connected is: " + robotConnected.toString());
         	
         	//update connection status
         	if (robotConnected)
         	{
         		connectedLED.setImageResource(R.drawable.led_green);
+        		//batteryInfo.;
         		
         		//update the wifi signal strength indicator
             	if ((signalStrength == 5) || (signalStrength==4))
@@ -381,13 +395,13 @@ private OnTouchListener moveCamButtonListener = new OnTouchListener(){
  public void socketCleanup()
     {
     	try {
-    	Log.d(TAG, "Socket Closing");
+    	Log.d(DEBUG_TAG, "Socket Closing");
     	if (s != null)
     		s.close();
     	setConnected(false);
     	} catch (IOException e) {
        	
-       	Log.d(TAG, "Client comm thread got IOException in socketCleanup().");
+       	Log.d(DEBUG_TAG, "Client comm thread got IOException in socketCleanup().");
        	} 	 	
     }
     
@@ -417,7 +431,7 @@ private OnTouchListener moveCamButtonListener = new OnTouchListener(){
                 InputStream is = httpCon.getInputStream();
                 return BitmapFactory.decodeStream(is);
             }catch(Exception e){
-                Log.e(TAG, "Failed to load image",e);
+                Log.e(DEBUG_TAG, "Failed to load image",e);
             }
             return null;
         } 
@@ -442,7 +456,7 @@ class ClientThread implements Runnable {
 	  	private static final int SERVERPORT = 8082;
 	
 	    public void run() {
-	    	Log.d(TAG, "clientThread started");
+	    	Log.d(DEBUG_TAG, "clientThread started");
 	    	setConnected(false);
 	    	while ((!Thread.currentThread().isInterrupted()) && stayConnected)
 	    	{
@@ -451,7 +465,7 @@ class ClientThread implements Runnable {
 	    	}
 	    
 	    	//user requested disconnect
-	    	Log.d(TAG, "clientThread ending");
+	    	Log.d(DEBUG_TAG, "clientThread ending");
 	    }
 	    
 	    void controlLoop()
@@ -462,7 +476,7 @@ class ClientThread implements Runnable {
 	    	String outputString = null;
 	    	Boolean continueLoop = true;
 	    	
-	    	Log.d(TAG, "controlLoop starting");
+	    	Log.d(DEBUG_TAG, "controlLoop starting");
 	    	
 	    	 //protocol:
             //Java boolean: enabled or disabled 
@@ -473,15 +487,15 @@ class ClientThread implements Runnable {
 	    	continueLoop = true;
 	    	
 	    	try {
-	    		Log.d(TAG,"NG: Loop Beginning");
+	    		Log.d(DEBUG_TAG,"NG: Loop Beginning");
                 InetAddress serverAddr = InetAddress.getByName(robotIP);
                 Socket s = new Socket();
                 int timeout = 2000;   // milliseconds
-                Log.d(TAG, "NG: Next create Conn. Obj. using>" + serverAddr +":"+ SERVERPORT);
+                Log.d(DEBUG_TAG, "NG: Next create Conn. Obj. using>" + serverAddr +":"+ SERVERPORT);
                 SocketAddress sockaddr = new InetSocketAddress(serverAddr, SERVERPORT);
-                Log.d(TAG, "NG: Conn. to socket Obj. using>" + sockaddr);
+                Log.d(DEBUG_TAG, "NG: Conn. to socket Obj. using>" + sockaddr);
                 s.connect(sockaddr, timeout);
-                Log.d(TAG, "NG: Connection Object Created");
+                Log.d(DEBUG_TAG, "NG: Connection Object Created");
                 
                 // Setup Input and Output stream on the connection
                 s_input = new BufferedReader(new InputStreamReader(s.getInputStream()));
@@ -490,15 +504,15 @@ class ClientThread implements Runnable {
                 
             	} catch (UnknownHostException e1) {
             		e1.printStackTrace();
-            		Log.d(TAG, "Got invalid IP string in client thread");
+            		Log.d(DEBUG_TAG, "Got invalid IP string in client thread");
             		continueLoop = false;
             	} catch (IOException e) {
-            			Log.d(TAG, "Socket setup caught IOexception");
+            			Log.d(DEBUG_TAG, "Socket setup caught IOexception");
             			continueLoop = false;
 
             		}
 
-	    	Log.d(TAG, "Socket Established - Possibly");
+	    	Log.d(DEBUG_TAG, "Socket Established - Possibly");
 	    	
 	    	setConnected(true);
 	    	
@@ -513,7 +527,7 @@ class ClientThread implements Runnable {
 	    			if (stayConnected)
 	    				{
 	    				outputString = robotEnabled.toString() + "," + direction.toString() + "," + speed.toString() + "," + phonePan.toString() + "," + phoneTilt.toString();
-	    				//Log.d(TAG, "Client sends: " + outputString.toString());
+	    				//Log.d(DEBUG_TAG, "Client sends: " + outputString.toString());
 	    				}
 	    			else 
 	    				outputString = "quit";
@@ -527,16 +541,16 @@ class ClientThread implements Runnable {
 	    				if (inputString == null)
 	    					{
 	    					continueLoop = false;
-	    					Log.d(TAG, "Unexpected disconnection.");
+	    					Log.d(DEBUG_TAG, "Unexpected disconnection - sensor values from server were empty");
 	    					}
 	    				else
 	    				{
-	    				//Log.d(TAG, "Client got: " + inputString.toString());
+	    				Log.d(DEBUG_TAG, "Client got: " + inputString.toString());
 	    				//parse returned string, which is just an integer containing the signal strength
 	    				try {
 	    				    signalStrength = Integer.parseInt(inputString);
 	    					} catch(NumberFormatException nfe) {
-	    						Log.d(TAG, "Got invalid signal strength from client");
+	    						Log.d(DEBUG_TAG, "Got invalid signal strength from server output");
 	    					} 
 	    					}
 	    				}
@@ -544,16 +558,16 @@ class ClientThread implements Runnable {
 	    				{
 	    				//printwriter.checkError returned true, something bad happened network-wise
 	    				continueLoop = false;
-    					Log.d(TAG, "Printwriter.checkError() returned true, likely network problem");
+    					Log.d(DEBUG_TAG, "Printwriter.checkError() returned true, likely network problem");
 	    				}
 	    		}
 	    	
              socketCleanup();
-             Log.d(TAG, "controlLoop ending");
+             Log.d(DEBUG_TAG, "controlLoop ending");
              
 	    	} catch (IOException e) {
             	//this happens if the connection times out.
-            	Log.d(TAG, "Client comm thread got IOException in control loop.");
+            	Log.d(DEBUG_TAG, "Client comm thread got IOException in control loop.");
             	socketCleanup();
 	    	} 	 
 

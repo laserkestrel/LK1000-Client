@@ -9,7 +9,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
     
-         <requestFocus />
+         <requestFocus android:layout_height="match_parent" />
+
      <ImageView
          android:id="@+id/imageView1"
          android:layout_width="match_parent"
@@ -96,12 +97,22 @@
          android:scaleType="fitCenter"
          android:src="@drawable/left" />
 
-     <SeekBar
+<SeekBar
          android:id="@+id/phoneTiltSeekBar"
          android:layout_width="500px"
          android:layout_height="wrap_content"
          android:layout_above="@+id/leftButton"
          android:layout_alignLeft="@+id/phonePanSeekBar"
          android:max="@integer/phoneTiltMax" />
+
+<TextView
+    android:id="@+id/textViewBatteryInfo"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentTop="true"
+    android:text="@string/batt_level_label"
+    android:textColor="#FF0000"
+    android:typeface="monospace" />
 
 </RelativeLayout>

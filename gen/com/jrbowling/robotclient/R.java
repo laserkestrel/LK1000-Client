@@ -41,7 +41,7 @@ public final class R {
     public static final class id {
         public static final int ImageView01=0x7f090001;
         public static final int ImageViewSignalStrength=0x7f090008;
-        public static final int action_settings=0x7f09000c;
+        public static final int action_settings=0x7f09000d;
         public static final int forwardButton=0x7f090005;
         public static final int imageView1=0x7f090000;
         public static final int imageViewConnectStatus=0x7f090007;
@@ -51,6 +51,7 @@ public final class R {
         public static final int phoneTiltSeekBar=0x7f09000b;
         public static final int reverseButton=0x7f090004;
         public static final int rightButton=0x7f090003;
+        public static final int textViewBatteryInfo=0x7f09000c;
         public static final int throttleSeekbar=0x7f090006;
     }
     public static final class integer {
@@ -67,6 +68,7 @@ public final class R {
         public static final int DefaultRobotIP=0x7f060005;
         public static final int action_settings=0x7f060001;
         public static final int app_name=0x7f060000;
+        public static final int batt_level_label=0x7f060006;
         public static final int hello_world=0x7f060002;
         public static final int toggle_connected=0x7f060003;
         public static final int toggle_disconnected=0x7f060004;
