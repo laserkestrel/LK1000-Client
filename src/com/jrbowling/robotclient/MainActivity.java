@@ -421,7 +421,6 @@ private OnTouchListener moveCamButtonListener = new OnTouchListener(){
         }
         @Override
         protected Bitmap doInBackground(String... params) {
-            //TODO Auto-generated method stub
             try{
                 URL url = new URL(params[0]);
                 HttpURLConnection httpCon = 
@@ -472,10 +471,11 @@ class ClientThread implements Runnable {
 	    {
 	    	BufferedReader s_input = null;
 	    	PrintWriter s_output = null;
-	    	String inputString = null;
+	    	String inputString = "0,0";
 	    	String outputString = null;
 	    	Boolean continueLoop = true;
-	    	
+	    	//String st = null;
+	    	//CLIENT CRASHES WITH NULL POINTER EXCEPTION...I think its around this shit.
 	    	Log.d(DEBUG_TAG, "controlLoop starting");
 	    	
 	    	 //protocol:
@@ -487,16 +487,13 @@ class ClientThread implements Runnable {
 	    	continueLoop = true;
 	    	
 	    	try {
-	    		Log.d(DEBUG_TAG,"NG: Loop Beginning");
+	    		
                 InetAddress serverAddr = InetAddress.getByName(robotIP);
                 Socket s = new Socket();
                 int timeout = 2000;   // milliseconds
-                Log.d(DEBUG_TAG, "NG: Next create Conn. Obj. using>" + serverAddr +":"+ SERVERPORT);
                 SocketAddress sockaddr = new InetSocketAddress(serverAddr, SERVERPORT);
-                Log.d(DEBUG_TAG, "NG: Conn. to socket Obj. using>" + sockaddr);
                 s.connect(sockaddr, timeout);
-                Log.d(DEBUG_TAG, "NG: Connection Object Created");
-                
+                                
                 // Setup Input and Output stream on the connection
                 s_input = new BufferedReader(new InputStreamReader(s.getInputStream()));
                 s_output = new PrintWriter(s.getOutputStream(), true);
@@ -511,9 +508,6 @@ class ClientThread implements Runnable {
             			continueLoop = false;
 
             		}
-
-	    	Log.d(DEBUG_TAG, "Socket Established - Possibly");
-	    	
 	    	setConnected(true);
 	    	
 	    	try {
@@ -546,18 +540,31 @@ class ClientThread implements Runnable {
 	    				else
 	    				{
 	    				Log.d(DEBUG_TAG, "Client got: " + inputString.toString());
-	    				//parse returned string, which is just an integer containing the signal strength
-	    				try {
-	    				    signalStrength = Integer.parseInt(inputString);
-	    					} catch(NumberFormatException nfe) {
-	    						Log.d(DEBUG_TAG, "Got invalid signal strength from server output");
-	    					} 
-	    					}
-	    				}
+
+						// parse input line from LK server
+						String[] separated = inputString.split(",");
+	    				
+	    				if (separated.length == 2)
+						{
+							signalStrength = Integer.valueOf(separated[0]);
+							batteryStrength = Integer.valueOf(separated[1]);
+							Log.d(DEBUG_TAG, "Client picked up sensor values ." + signalStrength + "and" +batteryStrength);
+ 
+							// example st input is "4,45"
+						} 
+	    				else 
+						{
+							// we got a bad command string. All stop.
+							//direction = "stop";
+							//robotEnabled = false;
+							Log.d(DEBUG_TAG, "WARNING invalid sensor data from server.");
+						}	
+	    				}}
+	    				
 	    			else
 	    				{
 	    				//printwriter.checkError returned true, something bad happened network-wise
-	    				continueLoop = false;
+	    				//continueLoop = false;
     					Log.d(DEBUG_TAG, "Printwriter.checkError() returned true, likely network problem");
 	    				}
 	    		}
