@@ -356,7 +356,7 @@ private OnTouchListener moveCamButtonListener = new OnTouchListener(){
         	if (robotConnected)
         	{
         		connectedLED.setImageResource(R.drawable.led_green);
-        		//batteryInfo.;
+        		batteryInfo.setText("Batt:"+batteryStrength+"%\n");
         		
         		//update the wifi signal strength indicator
             	if ((signalStrength == 5) || (signalStrength==4))
